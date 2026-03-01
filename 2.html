@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <!-- 手机适配关键设置 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>祝福语 · 逐条冒出 · 手机版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* 去掉移动端点击灰块 */
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;           /* 禁止滚动，保持全屏卡片浮动 */
+            position: relative;
+            /* 轻背景微纹理 */
+            background-image: radial-gradient(circle at 20px 20px, rgba(0,0,0,0.02) 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+
+        /* 祝福卡片样式 —— 手机友好 */
+        .bless-card {
+            position: absolute;
+            width: 160px;                /* 手机屏幕稍小，宽度减小 */
+            min-height: 48px;
+            background-color: #fff;       /* 默认会被JS覆盖 */
+            border-radius: 18px;          /* 更大圆角，更柔和 */
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 10px;
+            font-size: 14px;              /* 基础，JS会覆盖 */
+            color: #1e293b;                /* 深色文字，适应绝大多数浅色背景 */
+            text-align: center;
+            line-height: 1.4;
+            word-break: break-word;
+            transition: box-shadow 0.2s;
+            animation: popIn 0.2s ease-out;   /* 快速出现动画 */
+            pointer-events: none;           /* 让卡片不干扰按钮点击 */
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(1px);
+            z-index: 1;
+            /* 手机上最多显示16px字体，卡片内边距适中 */
+        }
+
+        /* 出现动画——有点弹性 */
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(6px);
+            }
+            70% {
+                opacity: 0.9;
+                transform: scale(1.02) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* 按钮容器固定在顶部，始终可点 */
+        .action-bar {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            pointer-events: none;           /* 容器不拦截点击，内部按钮可点 */
+            width: max-content;
+        }
+
+        .reset-btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 520;
+            color: #2c3e50;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+            border: none;
+            font-family: inherit;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .reset-btn:active {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(0.96);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 手机小屏适配：卡片更小一点，按钮缩小一点 */
+        @media (max-width: 480px) {
+            .bless-card {
+                width: 140px;
+                min-height: 44px;
+                font-size: 13px;
+                padding: 6px 8px;
+                border-radius: 16px;
+            }
+            .reset-btn {
+                padding: 10px 24px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* 对于超宽屏（平板），卡片稍微大一些，但还是保留200以内 */
+        @media (min-width: 768px) {
+            .bless-card {
+                width: 180px;
+                min-height: 54px;
+                font-size: 15px;
+            }
+        }
+
+        /* 可选：添加一个轻柔的计数器（非必须，但增加一点趣味）*/
+        .card-counter {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 9998;
+            pointer-events: none;
+            font-weight: 400;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="action-bar">
+        <button class="reset-btn" id="reblessBtn">✨ 再来一次祝福 ✨</button>
+    </div>
+    <!-- 可选的小计数器，显示当前卡片数量 -->
+    <div class="card-counter" id="counterDisplay">0 / 300</div>
+
+    <script>
+        (function() {
+            // ---------- 祝福语列表 (与原程序一致) ----------
+            const messages = [
+                "今天天气怎么样", "今天的你也很辛苦", "期待我们下次见面", "在干吗", "别熬夜",
+                "很高兴和你在一起", "愿所有梦想成真", "好好吃饭", "且逢良辰，顺颂时宜",
+                "见到你就很开心", "你笑起来真好看", "告诉你，你很好", "时间都很珍贵",
+                "你是今天的小幸运", "有你在就很安心", "你的努力很有用", "一切都会变好",
+                "慢慢来", "今天也为你加油", "愿你被世界温柔以待", "今天也要开心呀",
+                "记得照顾好自己", "你是最棒的", "相信自己，你可以的", "每一天都是新的开始",
+                "生活因你而更美好", "保持微笑", "累了就休息一下", "给自己一个拥抱",
+                "世界因你而不同", "小进步也是进步", "珍惜当下", "阳光总在风雨后",
+                "做自己就很好", "你的存在让世界更美好", "今天也要好好爱自己",
+                "平凡的日子也值得庆祝", "你的心意我都能感受到", "无论何时我都在这里",
+                "愿你的每一天都充满阳光", "小小的幸福也很珍贵", "别忘了生活中的小确幸",
+                "你的快乐就是我的快乐", "愿温暖常伴你左右", "每个明天都值得期待",
+                "你是独一无二的存在", "做自己喜欢的事最重要", "别太在意别人的眼光",
+                "你已经做得很好了", "愿好运常伴你身边", "简单的生活也很美好",
+                "记得对自己好一点", "你的努力终将开花结果", "每一天都是特别的礼物",
+                "愿你的心中永远有光", "保持初心，方得始终", "小小的善意也能温暖世界",
+                "你的微笑是最好的礼物", "愿你的生活充满惊喜", "每个瞬间都值得被珍惜",
+            ];
+
+            // ---------- 背景色列表 ----------
+            const bgColors = [
+                "#FFB6C1", "#FFD1DC", "#F8C8DC", "#ADD8E6", "#B0E0E6",
+                "#87CEFA", "#E0FFFF", "#98FB98", "#90EE90", "#F0E68C",
+                "#FAFAD2", "#D8BFD8", "#E6E6FA", "#FFE4E1", "#FFDEAD",
+                "#F5DEB3", "#D2B48C", "#BC8F8F", "#F4A460", "#DEB887"
+            ];
+
+            // ---------- 配置 ----------
+            const TOTAL_CARDS = 300;                // 总卡片数，与原程序一致
+            const CREATE_INTERVAL_MS = 30;           // 每30毫秒冒出一个 (≈ 9秒出完)
+            const CARD_LIFETIME = 12000;              // 12秒后消失
+
+            // 状态变量
+            let createdCount = 0;                      // 已经创建的卡片数量
+            let generationInterval = null;              // 生成定时器ID
+            let cardTimers = [];                         // 存储每个卡片消失的定时器ID
+            let activeCards = new Set();                 // 用于跟踪当前卡片DOM（可选，用于计数器）
+
+            // 获取计数器显示元素
+            const counterEl = document.getElementById('counterDisplay');
+
+            // 更新计数器显示
+            function updateCounter() {
+                if (counterEl) {
+                    const currentCards = document.querySelectorAll('.bless-card').length;
+                    counterEl.textContent = `${currentCards} / ${TOTAL_CARDS}`;
+                }
+            }
+
+            // ---------- 随机工具 ----------
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // ---------- 创建一张卡片 (与之前类似，但返回card元素以便记录) ----------
+            function createOneCard() {
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+                const bg = bgColors[Math.floor(Math.random() * bgColors.length)];
+                const fontSize = getRandomInt(12, 16);
+
+                // 视口尺寸
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                // 卡片尺寸 (根据当前css可能变化，这里使用固定值估算，保证不溢出)
+                // 我们获取一个实际卡片的宽度？为简单，使用估算值：手机版140~180，取中间值160
+                // 但为了精准，可以创建临时测量？不必要，直接用160估算，maxLeft确保不超出
+                let cardWidth = 160;   // 基本宽度，css媒体查询会影响，但作为定位足够
+                if (viewportWidth >= 768) cardWidth = 180;
+                if (viewportWidth <= 480) cardWidth = 140;
+
+                const cardHeight = 60;  // 估算高度，留有余地
+
+                // 计算安全范围
+                const maxLeft = Math.max(0, viewportWidth - cardWidth);
+                const maxTop = Math.max(0, viewportHeight - cardHeight);
+
+                // 模仿原程序 left 从 50 到 screenWidth-200，但边界处理
+                const leftMin = Math.min(50, maxLeft);
+                const topMin = Math.min(50, maxTop);
+
+                const left = getRandomInt(leftMin, maxLeft);
+                const top = getRandomInt(topMin, maxTop);
+
+                // 创建卡片元素
+                const card = document.createElement('div');
+                card.className = 'bless-card';
+                card.style.backgroundColor = bg;
+                card.style.fontSize = fontSize + 'px';
+                card.style.left = left + 'px';
+                card.style.top = top + 'px';
+                card.textContent = msg;
+
+                document.body.appendChild(card);
+                activeCards.add(card);  // 用于后续跟踪（可选）
+                updateCounter();
+
+                // 设置定时器自动消失
+                const timerId = setTimeout(() => {
+                    if (card.parentNode) {
+                        card.remove();
+                        activeCards.delete(card);
+                        updateCounter();
+                    }
+                    // 从cardTimers中移除自己
+                    const idx = cardTimers.indexOf(timerId);
+                    if (idx > -1) cardTimers.splice(idx, 1);
+                }, CARD_LIFETIME);
+
+                cardTimers.push(timerId);
+            }
+
+            // ---------- 生成下一张卡片（由间隔调用触发）----------
+            function generateNextBatch() {
+                if (createdCount < TOTAL_CARDS) {
+                    createOneCard();
+                    createdCount++;
+                } else {
+                    // 卡片已全部生成，停止间隔
+                    if (generationInterval) {
+                        clearInterval(generationInterval);
+                        generationInterval = null;
+                    }
+                }
+            }
+
+            // ---------- 开始生成（清除已有，重新启动）----------
+            function startGeneration() {
+                if (generationInterval) clearInterval(generationInterval);
+                generationInterval = setInterval(generateNextBatch, CREATE_INTERVAL_MS);
+            }
+
+            // ---------- 重置所有：清空卡片、取消所有定时器、重置计数、重新开始生成 ----------
+            function resetAllCards() {
+                // 1. 停止生成间隔
+                if (generationInterval) {
+                    clearInterval(generationInterval);
+                    generationInterval = null;
+                }
+
+                // 2. 清除所有卡片的消失定时器
+                cardTimers.forEach(id => clearTimeout(id));
+                cardTimers = [];
+
+                // 3. 移除所有卡片DOM
+                const existingCards = document.querySelectorAll('.bless-card');
+                existingCards.forEach(card => card.remove());
+                activeCards.clear();
+
+                // 4. 重置计数器
+                createdCount = 0;
+                updateCounter();
+
+                // 5. 重新开始生成卡片（一个一个冒出来）
+                startGeneration();
+            }
+
+            // ---------- 初始化：页面加载后开始逐个生成卡片 ----------
+            window.addEventListener('load', () => {
+                // 保证没有任何残留
+                resetAllCards();  // reset里已经调用了startGeneration
+            });
+
+            // ---------- 绑定重置按钮 ----------
+            const resetBtn = document.getElementById('reblessBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', (e) => {
+                    e.preventDefault();   // 防止任何怪异行为
+                    resetAllCards();
+                });
+            }
+
+            // ---------- 可选：当窗口尺寸变化时，已存在的卡片不重新定位（与原程序一致） ----------
+            // 但为了卡片不跑出边界，我们不做处理，就保持原位置。
+
+            // 增加计数器初始显示
+            updateCounter();
+
+            // 另外，为了手机上的触摸反馈，按钮已经支持:active
+        })();
+    </script>
+</body>
+</html>
