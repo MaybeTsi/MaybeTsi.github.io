@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>祝智造54女生们女生节快乐！</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+            background-image: radial-gradient(circle at 20px 20px, rgba(0,0,0,0.02) 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+
+        /* 小卡片样式 */
+        .bless-card {
+            position: absolute;
+            width: 160px;
+            min-height: 48px;
+            background-color: #fff;
+            border-radius: 18px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 10px;
+            font-size: 14px;
+            color: #1e293b;
+            text-align: center;
+            line-height: 1.4;
+            word-break: break-word;
+            transition: box-shadow 0.2s;
+            animation: popIn 0.2s ease-out;
+            pointer-events: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(1px);
+            z-index: 1;
+        }
+
+        /* 出现动画 */
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(6px);
+            }
+            70% {
+                opacity: 0.9;
+                transform: scale(1.02) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* 消失动画 */
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+        .bless-card.fade-out {
+            animation: fadeOut 0.2s ease forwards;
+        }
+
+        /* 按钮容器 */
+        .action-bar {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            pointer-events: none;
+            width: max-content;
+        }
+
+        .reset-btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 520;
+            color: #2c3e50;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+            border: none;
+            font-family: inherit;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .reset-btn:active {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(0.96);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 大弹框——女生节快乐 */
+        .big-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #ffb6c1, #ff99aa);
+            color: #4a0033;
+            font-size: 4rem;
+            font-weight: bold;
+            padding: 2rem 3rem;
+            border-radius: 60px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3), 0 0 0 8px rgba(255,255,240,0.3);
+            z-index: 10000;
+            text-align: center;
+            white-space: nowrap;
+            border: 4px solid #ffffff;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            letter-spacing: 6px;
+            text-shadow: 3px 3px 0 #ffe0e0;
+        }
+        .big-popup:not(.hidden) {
+            opacity: 1;
+        }
+        .big-popup.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 手机适配 */
+        @media (max-width: 480px) {
+            .bless-card {
+                width: 140px;
+                min-height: 44px;
+                font-size: 13px;
+                padding: 6px 8px;
+                border-radius: 16px;
+            }
+            .reset-btn {
+                padding: 10px 24px;
+                font-size: 1.1rem;
+            }
+            .big-popup {
+                font-size: 2.4rem;
+                padding: 1.5rem 2rem;
+                border-radius: 40px;
+                white-space: normal;
+                width: 80%;
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .bless-card {
+                width: 180px;
+                min-height: 54px;
+                font-size: 15px;
+            }
+        }
+
+        .card-counter {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 9998;
+            pointer-events: none;
+            font-weight: 400;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="action-bar">
+        <button class="reset-btn" id="reblessBtn">✨ 再来一次祝福 ✨</button>
+    </div>
+    <div class="card-counter" id="counterDisplay">0 / 300</div>
+
+    <!-- 大弹框 (初始隐藏) -->
+    <div id="bigPopup" class="big-popup hidden">女生节快乐！</div>
+
+    <script>
+        (function() {
+            // ---------- 祝福语列表 ----------
+            const messages = [
+                "清华女生节，你是主角",
+                "今天也在清华闪闪发光",
+                "自强不息，也要好好休息",
+                "厚德载物，更载快乐",
+                "今天的你也很辛苦",
+                "别熬夜",
+                "很高兴和你在一起",
+                "清华的风记得你的努力",
+                "做自己，就是最酷的清华女生",
+                "紫操夜聊记得添衣",
+                "paper 接收！offer 拿来！",
+                "早八课也有好气色",
+                "愿所有梦想成真",
+                "好好吃饭",
+                "且逢良辰，顺颂时宜",
+                "见到你就很开心",
+                "你笑起来真好看",
+                "你在清华，本身就是风景",
+                "荷塘月色不如你的笑",
+                "你是今天的小幸运",
+                "有你在就很安心",
+                "你的努力很有用",
+                "一切都会变好",
+                "慢慢来",
+                "今天也为你加油",
+                "愿你被世界温柔以待",
+                "今天也要开心呀",
+                "记得照顾好自己",
+                "你是最棒的",
+                "相信自己，你可以的",
+                "每一天都是新的开始",
+                "生活因你而更美好",
+                "保持微笑",
+                "累了就休息一下",
+                "给自己一个拥抱",
+                "世界因你而不同",
+                "情人坡桃花为你开",
+                "近春园荷花映你笑",
+                "校河边的柳树为你绿",
+                "清华路的银杏为你黄",
+                "学堂路下雪慢慢走",
+                "你的存在让世界更美好",
+                "今天也要好好爱自己",
+                "平凡的日子也值得庆祝",
+                "今天也在清华闪闪发光",
+                "愿你的每一天都充满阳光",
+                "小小的幸福也很珍贵",
+                "别忘了生活中的小确幸",
+                "你的快乐就是我的快乐",
+                "愿温暖常伴你左右",
+                "每个明天都值得期待",
+                "你是独一无二的存在",
+                "做自己喜欢的事最重要",
+                "别太在意别人的眼光",
+                "你已经做得很好了",
+                "愿好运常伴你身边",
+                "简单的生活也很美好",
+                "记得对自己好一点",
+                "你的努力终将开花结果",
+                "每一天都是特别的礼物",
+                "新清华学堂为你亮灯",
+                "逸夫馆的座位总向阳",
+                "李文正馆的灯为你留",
+                "六教电梯刚好赶上",
+                "三教走廊不再迷路",
+                "C楼奶茶买一送一",
+                "观畴园永远有座",
+                "玉树园夜宵不排队",
+                "清华学堂的猫对你撒娇",
+                "愿你的生活充满惊喜",
+                "你在清华，本身就是风景",
+                "荷塘月色不如你的笑",
+            ];
+
+            // 背景色列表
+            const bgColors = [
+                "#FFB6C1", "#FFD1DC", "#F8C8DC", "#ADD8E6", "#B0E0E6",
+                "#87CEFA", "#E0FFFF", "#98FB98", "#90EE90", "#F0E68C",
+                "#FAFAD2", "#D8BFD8", "#E6E6FA", "#FFE4E1", "#FFDEAD",
+                "#F5DEB3", "#D2B48C", "#BC8F8F", "#F4A460", "#DEB887"
+            ];
+
+            // ---------- 配置 ----------
+            const TOTAL_CARDS = 300;
+            const CREATE_INTERVAL_MS = 30;            // 30毫秒生成一个
+            const DISAPPEAR_INTERVAL_MS = 30;          // 30毫秒触发一个卡片消失
+
+            // 状态变量
+            let createdCount = 0;
+            let generationInterval = null;
+            let disappearInterval = null;                // 消失过程的定时器
+            let activeCards = new Set();                  // 用于跟踪当前卡片DOM
+
+            const bigPopup = document.getElementById('bigPopup');
+            let bigPopupHideTimer = null;
+            const counterEl = document.getElementById('counterDisplay');
+
+            function updateCounter() {
+                if (counterEl) {
+                    const currentCards = document.querySelectorAll('.bless-card').length;
+                    counterEl.textContent = `${currentCards} / ${TOTAL_CARDS}`;
+                }
+            }
+
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function showBigPopup() {
+                if (!bigPopup) return;
+                if (bigPopupHideTimer) clearTimeout(bigPopupHideTimer);
+                bigPopup.classList.remove('hidden');
+                bigPopupHideTimer = setTimeout(() => {
+                    bigPopup.classList.add('hidden');
+                }, 3000);
+            }
+
+            function hideBigPopup() {
+                if (bigPopupHideTimer) clearTimeout(bigPopupHideTimer);
+                bigPopup.classList.add('hidden');
+            }
+
+            // 检查所有卡片是否已完全移除（从DOM中消失）
+            function checkAllCardsGone() {
+                if (document.querySelectorAll('.bless-card').length === 0) {
+                    showBigPopup();
+                }
+            }
+
+            // ---------- 创建一张卡片（不设自动消失）----------
+            function createOneCard() {
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+                const bg = bgColors[Math.floor(Math.random() * bgColors.length)];
+                const fontSize = getRandomInt(12, 16);
+
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                let cardWidth = 160;
+                if (viewportWidth >= 768) cardWidth = 180;
+                if (viewportWidth <= 480) cardWidth = 140;
+
+                const cardHeight = 60;
+                const maxLeft = Math.max(0, viewportWidth - cardWidth);
+                const maxTop = Math.max(0, viewportHeight - cardHeight);
+                const leftMin = Math.min(50, maxLeft);
+                const topMin = Math.min(50, maxTop);
+
+                const left = getRandomInt(leftMin, maxLeft);
+                const top = getRandomInt(topMin, maxTop);
+
+                const card = document.createElement('div');
+                card.className = 'bless-card';
+                card.style.backgroundColor = bg;
+                card.style.fontSize = fontSize + 'px';
+                card.style.left = left + 'px';
+                card.style.top = top + 'px';
+                card.textContent = msg;
+
+                document.body.appendChild(card);
+                activeCards.add(card);
+                updateCounter();
+            }
+
+            // ---------- 生成下一张卡片 ----------
+            function generateNextBatch() {
+                if (createdCount < TOTAL_CARDS) {
+                    createOneCard();
+                    createdCount++;
+                }
+                if (createdCount === TOTAL_CARDS) {
+                    // 所有卡片已生成完毕，停止生成间隔
+                    if (generationInterval) {
+                        clearInterval(generationInterval);
+                        generationInterval = null;
+                    }
+                    // 开始让卡片依次消失
+                    startDisappearing();
+                }
+            }
+
+            // ---------- 开始依次消失 ----------
+            function startDisappearing() {
+                if (disappearInterval) clearInterval(disappearInterval);
+                disappearInterval = setInterval(() => {
+                    // 找到所有还没有开始消失的卡片（没有fade-out类）
+                    const cards = document.querySelectorAll('.bless-card:not(.fade-out)');
+                    if (cards.length === 0) {
+                        // 已经没有可消失的卡片，停止定时器
+                        clearInterval(disappearInterval);
+                        disappearInterval = null;
+                        // 注意：此时可能还有正在消失动画中的卡片，它们最终会被移除，checkAllCardsGone会在它们移除后调用
+                        return;
+                    }
+                    // 取第一个，让它开始消失
+                    const card = cards[0];
+                    card.classList.add('fade-out');
+                    // 监听动画结束，移除DOM
+                    const onAnimationEnd = () => {
+                        card.removeEventListener('animationend', onAnimationEnd);
+                        if (card.parentNode) {
+                            card.parentNode.removeChild(card);
+                        }
+                        activeCards.delete(card);
+                        updateCounter();
+                        // 检查是否所有卡片都已移除
+                        checkAllCardsGone();
+                    };
+                    card.addEventListener('animationend', onAnimationEnd);
+                }, DISAPPEAR_INTERVAL_MS);
+            }
+
+            // ---------- 开始生成 ----------
+            function startGeneration() {
+                if (generationInterval) clearInterval(generationInterval);
+                generationInterval = setInterval(generateNextBatch, CREATE_INTERVAL_MS);
+            }
+
+            // ---------- 重置所有 ----------
+            function resetAllCards() {
+                // 停止生成
+                if (generationInterval) {
+                    clearInterval(generationInterval);
+                    generationInterval = null;
+                }
+                // 停止消失过程
+                if (disappearInterval) {
+                    clearInterval(disappearInterval);
+                    disappearInterval = null;
+                }
+                // 移除所有卡片（直接移除，不带动画）
+                const existingCards = document.querySelectorAll('.bless-card');
+                existingCards.forEach(card => card.remove());
+                activeCards.clear();
+                // 隐藏大弹框
+                hideBigPopup();
+                // 重置计数器
+                createdCount = 0;
+                updateCounter();
+                // 重新开始生成
+                startGeneration();
+            }
+
+            // ---------- 页面加载后开始 ----------
+            window.addEventListener('load', () => {
+                resetAllCards();
+            });
+
+            // ---------- 绑定重置按钮 ----------
+            const resetBtn = document.getElementById('reblessBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    resetAllCards();
+                });
+            }
+
+            // 初始计数器更新
+            updateCounter();
+        })();
+    </script>
+</body>
+</html>
